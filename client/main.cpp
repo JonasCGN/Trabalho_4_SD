@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         file.close();
 
     QByteArray env = qgetenv("MASTER_URL");
-    QString urlStr = env.isEmpty() ? QStringLiteral("http://localhost:8080/process") : QString::fromUtf8(env);
+    QString urlStr = env.isEmpty() ? QStringLiteral("http://192.168.1.12:8080/process") : QString::fromUtf8(env);
     QUrl url(urlStr);
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain; charset=utf-8");
@@ -78,12 +78,12 @@ int main(int argc, char *argv[]) {
 
         QNetworkReply *reply = manager->post(request, data);
 
-        QObject::connect(reply, &QNetworkReply::finished, [reply, responseView]() {
+        QObject::connect(reply, &QNetworkReply::finished, [reply, responseView, urlStr]() {
             if (reply->error() != QNetworkReply::NoError) {
-                responseView->append("Network error: " + reply->errorString());
+                responseView->append(QString("Network error to %1: %2").arg(urlStr, reply->errorString()));
             } else {
                 QByteArray resp = reply->readAll();
-                responseView->append("Response:\n" + QString::fromUtf8(resp));
+                responseView->append(QString("Response from %1:\n%2").arg(urlStr, QString::fromUtf8(resp)));
             }
             responseView->append("-------------------------------\n");
             reply->deleteLater();
