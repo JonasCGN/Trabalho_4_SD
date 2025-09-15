@@ -23,6 +23,6 @@ docker build -t client .
 rem Run client container. If you want GUI via X11, set DISPLAY accordingly on host
 rem Use host.docker.internal to reach host's ports; add host-gateway mapping for compatibility
 echo Running client container
-docker run -d --name client --add-host=host.docker.internal:host-gateway -e DISPLAY=host.docker.internal:0.0 -e QT_X11_NO_MITSHM=1 -e MASTER_URL="http://host.docker.internal:8080/process" client
+docker run -d --name client client
 
 echo Done. Use 'docker ps' to check running containers and 'docker logs -f client' to see client output.
