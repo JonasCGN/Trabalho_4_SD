@@ -53,16 +53,13 @@ RUN set -euo pipefail \
 
 # Observação: executar GUIs dentro de containers requer encaminhar o display (X11/Wayland)
 # Para testes de compilação/integração isso é suficiente; execução pode precisar de ajustes.
+
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-# Ensure script has Unix line endings (remove CRLF) and is executable to avoid bad interpreter errors
-RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
-    && chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENV MASTER_URL=http://192.168.1.12:8080/process
-    
-ENV QT_X11_NO_MITSHM=1
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENV QT_X11_NO_MITSHM=1
 
 CMD ["./main"]
