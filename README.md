@@ -10,9 +10,27 @@ Estrutura
 
 Pré-requisitos
 - Docker e Docker Compose
-<!-- - (Opcional) g++/clang/MSVC se for compilar localmente -->
+
 
 Subir com Docker (recomendado)
+
+### Opção 1: Script Automático (Windows) - Mais Fácil
+
+Para usuários Windows, existe um script que automatiza todo o processo:
+
+```powershell
+# Executa Docker + VcXsrv + Todos os serviços automaticamente
+.\run_all.bat
+```
+
+O script `run_all.bat` faz automaticamente:
+- ✅ Verifica se Docker está rodando e tenta iniciar se necessário
+- ✅ Inicia VcXsrv (se `start_vcxsrv.bat` existir)
+- ✅ Sobe master e slaves com `docker-compose up --build -d`
+- ✅ Rebuilda e executa o container do cliente
+- ✅ Mostra logs e status dos containers
+
+### Opção 2: Manual (Windows/Linux/macOS)
 
 1. Build e iniciar os serviços:
 
@@ -26,11 +44,34 @@ docker-compose up --build
 curl -X POST http://localhost:8080/process -d 'hello'
 ```
 
-Cliente CLI (envio de arquivo .txt)
+### Monitoramento
 
-Há um cliente CLI em `client/` que envia um arquivo texto ao Mestre.
+Verifique se todos os containers estão rodando:
+```bash
+docker ps
+```
 
-Build e executar via Docker (PowerShell):
+Veja logs dos serviços:
+```bash
+docker logs -f master
+docker logs -f slave1
+docker logs -f slave2
+docker logs -f client
+```
+
+### Exemplo de Teste Manual
+
+```bash
+# Teste básico via curl
+curl -X POST http://localhost:8080/process -d 'texto de exemplo'
+
+# Teste com arquivo
+curl -X POST http://localhost:8080/process --data-binary @meuarquivo.txt
+```
+
+## Cliente CLI (alternativo)
+
+Também há um cliente CLI em `client/` para uso em linha de comando:
 
 ```powershell
 cd client;
@@ -38,25 +79,7 @@ docker build -t client_cli .;
 docker run --rm -v "${PWD}:/data" client_cli /data/meuarquivo.txt http://host.docker.internal:8080
 ```
 
-Compilar e executar localmente (opcional):
 
-```powershell
-g++ -std=c++17 client/cli.cpp -Iclient -o client_cli -pthread
-./client_cli meuarquivo.txt http://localhost:8080
-```
-
-<!-- Rodando sem Docker (desenvolvimento)
-
-```bash
-g++ -std=c++17 server/main.cpp -o master -pthread
-g++ -std=c++17 slave1/main.cpp -o slave1 -pthread
-g++ -std=c++17 slave2/main.cpp -o slave2 -pthread
-
-# Em terminais separados:
-./slave1
-./slave2
-./master
-``` -->
 
 Usando interface gráfica no Windows (VcXsrv)
 
@@ -80,18 +103,6 @@ Defina a variável de ambiente `DISPLAY` como `host.docker.internal:0.0`. Exempl
 docker run --rm -e DISPLAY=host.docker.internal:0.0 -v "${PWD}:/work" my-gui-image
 ```
 
-No `docker-compose.yml` você pode adicionar:
-
-```yaml
-services:
-	gui-service:
-		image: my-gui-image
-		environment:
-			- DISPLAY=host.docker.internal:0.0
-```
-
-Opção B — WSL2 (quando usar Docker via WSL2):
-
 No WSL2, exporte o DISPLAY para o IP do Windows host:
 
 ```bash
@@ -103,10 +114,53 @@ Dicas e problemas comuns
 - Se a janela não abrir, verifique o Firewall do Windows e as configurações do VcXsrv.
 - Para desenvolvimento local, desabilitar o controle de acesso do X server é prático, mas não seguro para ambientes públicos.
 
-Observações do projeto
+## Interface do Cliente
+
+O sistema inclui uma interface gráfica para o cliente, desenvolvida em Qt, que facilita a interação com o sistema distribuído.
+
+### Tela Principal do Cliente
+
+![Interface principal do cliente](images/image_client.png)
+
+A interface permite ao usuário selecionar arquivos e enviar requisições ao servidor mestre de forma intuitiva.
+
+### Seleção de Arquivo
+
+![Seleção de arquivo de texto](images/image_client_select_txt.png)
+
+O cliente oferece um seletor de arquivos que permite escolher arquivos de texto (.txt) para processamento pelos escravos.
+
+### Recebimento de Resposta
+
+![Cliente recebendo resposta](images/image_client_reiceve_response.png)
+
+Após o processamento, o cliente exibe a resposta recebida do sistema mestre-escravo, mostrando os resultados do processamento distribuído.
+
+## Teste via Requisições JSON
+
+Para testes e desenvolvimento, você pode enviar requisições HTTP diretamente ao servidor usando ferramentas como curl, Postman, ou qualquer cliente HTTP.
+
+### Cabeçalhos da Requisição
+
+![Cabeçalhos HTTP da requisição](images/image_json_head.png)
+
+Configure os cabeçalhos apropriados para enviar dados ao endpoint `/process` do servidor mestre.
+
+### Resposta JSON do Sistema
+
+![Resposta JSON do servidor](images/image_json_response.png)
+
+O sistema retorna respostas em formato JSON contendo os resultados do processamento distribuído realizado pelos escravos.
+
+## Observações do projeto
 - Implementação didática: JSON construído manualmente e tratamento de erros simples.
-- Para produção, recomenda-se usar `nlohmann/json`, CMake, logs e políticas de retry/timeout mais robustas.
+- Para produção, recomenda-se usar `nlohmann/json` e políticas de retry/timeout mais robustas.
+- As imagens de demonstração mostram o funcionamento real da interface do cliente e exemplos de teste.
 
-Licença / Créditos
+## Links úteis:
+- Docker Desktop: https://www.docker.com/products/docker-desktop
+- VcXsrv X Server: https://sourceforge.net/projects/vcxsrv/
+- cpp-httplib: https://github.com/yhirose/cpp-httplib
 
+---
 Projeto para fins educacionais/demonstração.
