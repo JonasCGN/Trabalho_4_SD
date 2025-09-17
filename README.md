@@ -1,18 +1,5 @@
 # Sistema mestre-escravo (C++17, Docker)
 
-Este repositório contém uma implementação simples em C++ de um serviço Mestre que recebe requisições do Cliente e distribui trabalho para dois Escravos (slave1, slave2). A comunicação é por HTTP REST usando a biblioteca single-header `cpp-httplib`.
-
-Estrutura:
-
-Como rodar com Docker (recomendado):
-
-https://sourceforge.net/projects/vcxsrv/
-
-1. Build e up:
-
-```bash
-# Sistema mestre-escravo (C++17, Docker)
-
 Este repositório contém uma implementação simples em C++ de um serviço Mestre que recebe requisições do Cliente e distribui trabalho para dois Escravos (`slave1`, `slave2`). A comunicação é feita por HTTP REST usando a biblioteca single-header `cpp-httplib`.
 
 Estrutura
@@ -23,7 +10,7 @@ Estrutura
 
 Pré-requisitos
 - Docker e Docker Compose
-- (Opcional) g++/clang/MSVC se for compilar localmente
+<!-- - (Opcional) g++/clang/MSVC se for compilar localmente -->
 
 Subir com Docker (recomendado)
 
@@ -58,7 +45,7 @@ g++ -std=c++17 client/cli.cpp -Iclient -o client_cli -pthread
 ./client_cli meuarquivo.txt http://localhost:8080
 ```
 
-Rodando sem Docker (desenvolvimento)
+<!-- Rodando sem Docker (desenvolvimento)
 
 ```bash
 g++ -std=c++17 server/main.cpp -o master -pthread
@@ -69,7 +56,7 @@ g++ -std=c++17 slave2/main.cpp -o slave2 -pthread
 ./slave1
 ./slave2
 ./master
-```
+``` -->
 
 Usando interface gráfica no Windows (VcXsrv)
 
