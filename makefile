@@ -1,9 +1,9 @@
-all: start_visual run_server run_client_gui
+all: run_server run_client_gui
 
 start_visual:
 	@start_vcxsrv.bat
 
-run_client_gui:
+run_client_gui: start_visual
 	@docker rm -f client || true
 	@docker rmi -f client || true
 	cd client && docker build -t client .

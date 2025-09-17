@@ -59,6 +59,7 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENV MASTER_URL=http://host.docker.internal:8080/process
+# ENV MASTER_URL=http://10.180.47.173:8080/process
 
 ENV DISPLAY=host.docker.internal:0.0 
 
